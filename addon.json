@@ -1,0 +1,16 @@
+{ 
+	"title"		:	"[LLM] Anti-crash system +FPP ( Beta )", 
+	"type"		:	"tool", 
+	"tags"		:	[ "fun", "roleplay" ], 
+	"ignore"	: 
+	[ 
+		"*.psd*", 
+		"*.vcproj*", 
+		"*.svn*",
+		"*.git*",
+		"*.code-workspace*",
+		"LICENSE",
+		"README.md",
+		"Compile*"
+	]
+} 
