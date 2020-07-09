@@ -1,5 +1,3 @@
-local prefix = "LLM.Sv.Detection.Anti_Crash.Bad_Props_Detector.";
-
 local function BadProps_FindInEntityRadius( ent )
     local radius = ent:BoundingRadius();
     local objects = ents.FindInSphere( ent:GetPos(), radius / 3 );
@@ -19,36 +17,24 @@ local function BadProps_FindInEntityRadius( ent )
     return true;
 end;
 
-hook.Add( "PlayerSpawnedProp", prefix .. "PlayerSpawnedProp", function( ply, model, ent )
-    
-    do
-        if ( llm.sv.ent_object.phys_object.EnableMotion == nil ) then
+local PhysObj = FindMetaTable( "PhysObj" );
+local OriginalEnableMotion = PhysObj.EnableMotion;
 
-            llm.sv.ent_object.phys_object.EnableMotion = 
-                llm.sv.ent_object.phys_object.EnableMotion or 
-                    getmetatable( ent:GetPhysicsObject() ).EnableMotion;
+function PhysObj:EnableMotion( BooleanValue )
 
-        end;
-    end;
+    if ( BooleanValue ) then
 
-    local physObj = ent:GetPhysicsObject();
-    local physMeta = getmetatable( physObj );
+        if ( GetConVar( "llm_badprops_detector" ):GetInt() >= 1 ) then
 
-    physMeta.EnableMotion = function( self, BooleanValue )
-
-        if ( BooleanValue ) then
-
-            if ( GetConVar( "llm_badprops_detector" ):GetInt() >= 1 ) then
-
-                local ent = self:GetEntity();
-                if ( not BadProps_FindInEntityRadius( ent ) ) then return; end;
-                
+            local ent = self:GetEntity();
+            if ( IsValid( ent ) and not BadProps_FindInEntityRadius( ent ) ) then
+                return; 
             end;
-
+            
         end;
-
-        llm.sv.ent_object.phys_object.EnableMotion( self, BooleanValue );
 
     end;
 
-end );
+    OriginalEnableMotion( self, BooleanValue );
+
+end;
